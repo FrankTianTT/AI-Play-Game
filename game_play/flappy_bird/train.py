@@ -13,6 +13,8 @@ eval_callback = EvalCallback(eval_env=eval_env,
 
 model = DQN(policy="CnnPolicy",
             env=env,
+            buffer_size=50000,
+            learning_starts=2500,
             tensorboard_log="log")
 
 if __name__ == "__main__":

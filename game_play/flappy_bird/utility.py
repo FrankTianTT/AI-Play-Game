@@ -1,9 +1,11 @@
 from stable_baselines3.common.callbacks import EvalCallback
 from stable_baselines3.common.vec_env.vec_transpose import VecTransposeImage
 from stable_baselines3.common.torch_layers import BaseFeaturesExtractor
+from stable_baselines3 import DQN
 import torch
 import gym
 import torch.nn as nn
+import gym_flappy_bird
 
 class CnnEvalCallback(EvalCallback):
     """
@@ -63,3 +65,23 @@ class CustomCNN(BaseFeaturesExtractor):
 
     def forward(self, observations: torch.Tensor) -> torch.Tensor:
         return self.linear(self.cnn(observations))
+
+if __name__ == "__main__":
+    env = gym.make("flappy-bird-v0")
+    policy_kwargs = dict(
+        features_extractor_class=CustomCNN,
+        features_extractor_kwargs=dict(features_dim=128),
+    )
+    model = DQN(policy="CnnPolicy", env=env,)
+
+    model_customized = DQN(policy="CnnPolicy", env=env, policy_kwargs=policy_kwargs)
+
+    total_params = sum(p.numel() for p in model.policy.parameters())
+    total_trainable_params = sum(p.numel() for p in model.policy.parameters() if p.requires_grad)
+    print('model:\ntotal parameters: {}, training parameters: {}'.format(total_params, total_trainable_params))
+    # total parameters: 125984068, training parameters: 125984068
+
+    total_params = sum(p.numel() for p in model_customized.policy.parameters())
+    total_trainable_params = sum(p.numel() for p in model_customized.policy.parameters() if p.requires_grad)
+    print('customized model:\ntotal parameters: {}, training parameters: {}'.format(total_params, total_trainable_params))
+    # total parameters: 734404, training parameters: 734404

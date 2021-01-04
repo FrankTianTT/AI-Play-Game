@@ -18,4 +18,5 @@ model = DQN(policy="CnnPolicy",
             tensorboard_log="log")
 
 if __name__ == "__main__":
-    model.learn(int(1e5))
+    model.learn(int(1e5),
+                callback=eval_callback)

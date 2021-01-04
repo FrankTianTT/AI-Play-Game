@@ -1,3 +1,0 @@
-## Flappy Bird Gym Env 
-
-

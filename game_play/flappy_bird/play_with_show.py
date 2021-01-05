@@ -36,15 +36,24 @@ def draw3D(out3d, time_steps, save_path):
     x_dot = []
     y_dot = []
     z_dot = []
+    s = []
+    max = 0
+    min = 0
     for i in draw_list[0]:
         for j in draw_list[1]:
             for k in draw_list[2]:
                 if out3d[i][j][k] > 0:
+                    s.append(out3d[i][j][k])
                     z_dot.append(i)
                     x_dot.append(j)
                     y_dot.append(k)
-
-    ax.scatter3D(x_dot, y_dot, z_dot, marker='.', c='b', s=5)  # 绘制散点图
+                    if out3d[i][j][k] > max:
+                        max = out3d[i][j][k]
+                    if out3d[i][j][k] < min:
+                        min = out3d[i][j][k]
+    s = np.array(s)
+    s = (s - min) / (max - min) * 20
+    ax.scatter3D(x_dot, y_dot, z_dot, marker='.', c='white', s=s)  # 绘制散点图
     plt.savefig(os.path.join(save_path, '{}.jpg'.format(time_steps)))
     plt.close(fig)
 
@@ -55,16 +64,25 @@ def draw1D(out1d, time_steps, save_path, drop=10):
     plt.axis('off')
 
     zd = []
+    min = 0
+    max = 0
+    s = []
     for i in range(len(out1d)):
         if out1d[i] > 0:
             zd.append(i / drop)
-
+            s.append(out1d[i])
+            if out1d[i] > max:
+                max = out1d[i]
+            if out1d[i] < min:
+                min = out1d[i]
+    s = np.array(s)
+    s = (s - min) / (max - min) * 40
     z = np.linspace(0, len(out1d) / drop, 1000)
     x = 5 * np.sin(z)
     y = 5 * np.cos(z)
     xd = 5 * np.sin(zd)
     yd = 5 * np.cos(zd)
-    ax.scatter3D(xd, yd, zd, s=40)
+    ax.scatter3D(xd, yd, zd, s=s, c='white')
     ax.plot3D(x, y, z, 'gray')
     plt.savefig(os.path.join(save_path, '{}.jpg'.format(time_steps)))
     plt.close(fig)

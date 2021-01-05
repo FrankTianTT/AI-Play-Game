@@ -57,13 +57,13 @@ model = DQN.load(os.path.join(os.path.dirname(__file__), 'logs/best_model.zip'))
 
 model.policy.q_net.features_extractor.relu1.register_forward_hook(
     get_activation('relu1'))
-model.policy.q_net.features_extractor.relu1.register_forward_hook(
+model.policy.q_net.features_extractor.relu2.register_forward_hook(
     get_activation('relu2'))
-model.policy.q_net.features_extractor.relu1.register_forward_hook(
+model.policy.q_net.features_extractor.relu3.register_forward_hook(
     get_activation('relu3'))
-model.policy.q_net.features_extractor.relu1.register_forward_hook(
+model.policy.q_net.features_extractor.relu4.register_forward_hook(
     get_activation('relu4'))
-model.policy.q_net.features_extractor.relu1.register_forward_hook(
+model.policy.q_net.features_extractor.relu5.register_forward_hook(
     get_activation('relu5'))
 
 save_path = 'show_save'

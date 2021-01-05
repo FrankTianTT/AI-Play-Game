@@ -43,28 +43,43 @@ class CustomCNN(BaseFeaturesExtractor):
         # We assume CxHxW images (channels first)
         # Re-ordering will be done by pre-preprocessing or wrapper
         n_input_channels = observation_space.shape[0]
-        self.cnn = nn.Sequential(
-            nn.Conv2d(n_input_channels, 32, kernel_size=8, stride=4, padding=0),
-            nn.ReLU(),
-            nn.Conv2d(32, 64, kernel_size=8, stride=4, padding=0),
-            nn.ReLU(),
-            nn.Conv2d(64, 64, kernel_size=4, stride=2, padding=0),
-            nn.ReLU(),
-            nn.Conv2d(64, 64, kernel_size=4, stride=2, padding=0),
-            nn.ReLU(),
-            nn.Flatten(),
-        )
+        self.Conv2d1 = nn.Conv2d(n_input_channels, 16, kernel_size=8, stride=4, padding=0)
+        self.relu1 = nn.ReLU()
+        self.Conv2d2 = nn.Conv2d(16, 32, kernel_size=8, stride=4, padding=0)
+        self.relu2 = nn.ReLU()
+        self.Conv2d3 = nn.Conv2d(32, 32, kernel_size=6, stride=3, padding=0)
+        self.relu3 = nn.ReLU()
+        self.Conv2d4 = nn.Conv2d(32, 32, kernel_size=4, stride=2, padding=0)
+        self.relu4 = nn.ReLU()
+        self.flatten = nn.Flatten()
 
         # Compute shape by doing one forward pass
         with torch.no_grad():
-            n_flatten = self.cnn(
+
+            n_flatten = self.forward_cnn(
                 torch.as_tensor(observation_space.sample()[None]).float()
             ).shape[1]
 
-        self.linear = nn.Sequential(nn.Linear(n_flatten, features_dim), nn.ReLU())
+        self.linear1 = nn.Linear(n_flatten, features_dim)
+        self.relu5 = nn.ReLU()
 
-    def forward(self, observations: torch.Tensor) -> torch.Tensor:
-        return self.linear(self.cnn(observations))
+    def forward_cnn(self, x):
+        x = self.Conv2d1(x)
+        x = self.relu1(x)
+        x = self.Conv2d2(x)
+        x = self.relu2(x)
+        x = self.Conv2d3(x)
+        x = self.relu3(x)
+        x = self.Conv2d4(x)
+        x = self.relu4(x)
+        x = self.flatten(x)
+        return x
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        x = self.forward_cnn(x)
+        x = self.linear1(x)
+        x = self.relu5(x)
+        return x
 
 if __name__ == "__main__":
     env = gym.make("flappy-bird-v0")
@@ -76,6 +91,8 @@ if __name__ == "__main__":
 
     model_customized = DQN(policy="CnnPolicy", env=env, policy_kwargs=policy_kwargs)
 
+    print(model_customized.policy)
+
     total_params = sum(p.numel() for p in model.policy.parameters())
     total_trainable_params = sum(p.numel() for p in model.policy.parameters() if p.requires_grad)
     print('model:\ntotal parameters: {}, training parameters: {}'.format(total_params, total_trainable_params))
@@ -84,4 +101,4 @@ if __name__ == "__main__":
     total_params = sum(p.numel() for p in model_customized.policy.parameters())
     total_trainable_params = sum(p.numel() for p in model_customized.policy.parameters() if p.requires_grad)
     print('customized model:\ntotal parameters: {}, training parameters: {}'.format(total_params, total_trainable_params))
-    # total parameters: 734404, training parameters: 734404
+    # total parameters: 203748, training parameters: 203748

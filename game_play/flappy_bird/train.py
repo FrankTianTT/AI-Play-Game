@@ -9,7 +9,7 @@ env = gym.make("flappy-bird-v0")
 eval_env = gym.make("flappy-bird-v0")
 
 eval_callback = CnnEvalCallback(eval_env=eval_env,
-                             eval_freq=int(1e4),
+                             eval_freq=int(3e3),
                              log_path="logs",
                              best_model_save_path="logs")
 
@@ -20,7 +20,7 @@ policy_kwargs = dict(
 
 model = DQN(policy="CnnPolicy",
             env=env,
-            batch_size=128,
+            batch_size=32,
             buffer_size=5000,
             learning_starts=250,
             policy_kwargs=policy_kwargs,

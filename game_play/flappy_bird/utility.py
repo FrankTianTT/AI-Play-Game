@@ -5,6 +5,7 @@ from stable_baselines3 import DQN
 import torch
 import gym
 import torch.nn as nn
+import os
 import gym_flappy_bird
 
 class CnnEvalCallback(EvalCallback):
@@ -81,24 +82,53 @@ class CustomCNN(BaseFeaturesExtractor):
         x = self.relu5(x)
         return x
 
+
 if __name__ == "__main__":
+    # env = gym.make("flappy-bird-v0")
+    # policy_kwargs = dict(
+    #     features_extractor_class=CustomCNN,
+    #     features_extractor_kwargs=dict(features_dim=128),
+    # )
+    # model = DQN(policy="CnnPolicy", env=env,)
+    #
+    # model_customized = DQN(policy="CnnPolicy", env=env, policy_kwargs=policy_kwargs)
+    #
+    # print(model_customized.policy)
+    #
+    # total_params = sum(p.numel() for p in model.policy.parameters())
+    # total_trainable_params = sum(p.numel() for p in model.policy.parameters() if p.requires_grad)
+    # print('model:\ntotal parameters: {}, training parameters: {}'.format(total_params, total_trainable_params))
+    # # total parameters: 125984068, training parameters: 125984068
+    #
+    # total_params = sum(p.numel() for p in model_customized.policy.parameters())
+    # total_trainable_params = sum(p.numel() for p in model_customized.policy.parameters() if p.requires_grad)
+    # print('customized model:\ntotal parameters: {}, training parameters: {}'.format(total_params, total_trainable_params))
+    # # total parameters: 203748, training parameters: 203748
+
+    activation = {}
+
+    def get_activation(name):
+        def hook(model, input, output):
+            activation[name] = output.detach()
+        return hook
+
     env = gym.make("flappy-bird-v0")
-    policy_kwargs = dict(
-        features_extractor_class=CustomCNN,
-        features_extractor_kwargs=dict(features_dim=128),
-    )
-    model = DQN(policy="CnnPolicy", env=env,)
 
-    model_customized = DQN(policy="CnnPolicy", env=env, policy_kwargs=policy_kwargs)
+    model = DQN.load(os.path.join(os.path.dirname(__file__), 'logs/best_model.zip'))
 
-    print(model_customized.policy)
+    model.policy.q_net.features_extractor.Conv2d1.register_forward_hook(
+        get_activation('Conv2d1'))
+    model.policy.q_net.features_extractor.relu2.register_forward_hook(
+        get_activation('relu2'))
+    model.policy.q_net.features_extractor.relu3.register_forward_hook(
+        get_activation('relu3'))
+    model.policy.q_net.features_extractor.relu4.register_forward_hook(
+        get_activation('relu4'))
+    model.policy.q_net.features_extractor.relu5.register_forward_hook(
+        get_activation('relu5'))
 
-    total_params = sum(p.numel() for p in model.policy.parameters())
-    total_trainable_params = sum(p.numel() for p in model.policy.parameters() if p.requires_grad)
-    print('model:\ntotal parameters: {}, training parameters: {}'.format(total_params, total_trainable_params))
-    # total parameters: 125984068, training parameters: 125984068
+    obs = env.reset()
 
-    total_params = sum(p.numel() for p in model_customized.policy.parameters())
-    total_trainable_params = sum(p.numel() for p in model_customized.policy.parameters() if p.requires_grad)
-    print('customized model:\ntotal parameters: {}, training parameters: {}'.format(total_params, total_trainable_params))
-    # total parameters: 203748, training parameters: 203748
+    action, _ = model.predict(obs)
+
+    print(activation['Conv2d1'])

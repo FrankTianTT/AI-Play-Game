@@ -48,6 +48,27 @@ def draw3D(out3d, time_steps, save_path):
     plt.savefig(os.path.join(save_path, '{}.jpg'.format(time_steps)))
     plt.close(fig)
 
+def draw1D(out1d, time_steps, save_path, drop=10):
+    fig = plt.figure(facecolor='black')
+    ax = Axes3D(fig)
+    ax.set_facecolor((0, 0, 0))
+    plt.axis('off')
+
+    zd = []
+    for i in range(len(out1d)):
+        if out1d[i] > 0:
+            zd.append(i / drop)
+
+    z = np.linspace(0, len(out1d) / drop, 1000)
+    x = 5 * np.sin(z)
+    y = 5 * np.cos(z)
+    xd = 5 * np.sin(zd)
+    yd = 5 * np.cos(zd)
+    ax.scatter3D(xd, yd, zd, s=40)
+    ax.plot3D(x, y, z, 'gray')
+    plt.savefig(os.path.join(save_path, '{}.jpg'.format(time_steps)))
+    plt.close(fig)
+
 def save_obs(obs, time_steps, save_path):
     img = np.transpose(obs, (1, 0, 2))
     img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
@@ -65,6 +86,8 @@ model.policy.q_net.features_extractor.relu4.register_forward_hook(
     get_activation('relu4'))
 model.policy.q_net.features_extractor.relu5.register_forward_hook(
     get_activation('relu5'))
+model.policy.q_net.q_net.register_forward_hook(
+    get_activation('q_net'))
 
 save_path = 'show_save'
 
@@ -86,6 +109,11 @@ if __name__ == "__main__":
             layer_save_path = os.path.join(nn_save_path, name)
             pathlib.Path(layer_save_path).mkdir(parents=True, exist_ok=True)
             draw3D(activation[name][0], time_steps, layer_save_path)
+
+        for name in ['relu5']:
+            layer_save_path = os.path.join(nn_save_path, name)
+            pathlib.Path(layer_save_path).mkdir(parents=True, exist_ok=True)
+            draw1D(activation[name][0], time_steps, layer_save_path)
 
         image_save_path = os.path.join(this_rollout_save_path, "image")
         pathlib.Path(image_save_path).mkdir(parents=True, exist_ok=True)

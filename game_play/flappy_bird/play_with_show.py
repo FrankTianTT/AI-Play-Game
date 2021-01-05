@@ -126,12 +126,12 @@ if __name__ == "__main__":
         for name in ['relu1', 'relu2', 'relu3', 'relu4']:
             layer_save_path = os.path.join(nn_save_path, name)
             pathlib.Path(layer_save_path).mkdir(parents=True, exist_ok=True)
-            draw3D(activation[name][0], time_steps, layer_save_path)
+            draw3D(activation[name][0].cpu(), time_steps, layer_save_path)
 
         for name in ['relu5']:
             layer_save_path = os.path.join(nn_save_path, name)
             pathlib.Path(layer_save_path).mkdir(parents=True, exist_ok=True)
-            draw1D(activation[name][0], time_steps, layer_save_path)
+            draw1D(activation[name][0].cpu(), time_steps, layer_save_path)
 
         image_save_path = os.path.join(this_rollout_save_path, "image")
         pathlib.Path(image_save_path).mkdir(parents=True, exist_ok=True)

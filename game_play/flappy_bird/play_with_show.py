@@ -54,7 +54,7 @@ def draw3D(out3d, time_steps, save_path):
     s = np.array(s)
     s = (s - min) / (max - min) * 20
     ax.scatter3D(x_dot, y_dot, z_dot, marker='.', c='white', s=s)  # 绘制散点图
-    plt.savefig(os.path.join(save_path, '{}.jpg'.format(time_steps)))
+    plt.savefig(os.path.join(save_path, '{0:05d}.jpg'.format(time_steps)))
     plt.close(fig)
 
 def draw1D(out1d, time_steps, save_path, drop=10):
@@ -84,13 +84,13 @@ def draw1D(out1d, time_steps, save_path, drop=10):
     yd = 5 * np.cos(zd)
     ax.scatter3D(xd, yd, zd, s=s, c='white')
     ax.plot3D(x, y, z, 'gray')
-    plt.savefig(os.path.join(save_path, '{}.jpg'.format(time_steps)))
+    plt.savefig(os.path.join(save_path, '{0:05d}.jpg'.format(time_steps)))
     plt.close(fig)
 
 def save_obs(obs, time_steps, save_path):
     img = np.transpose(obs, (1, 0, 2))
     img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
-    cv2.imwrite(os.path.join(save_path, '{}.jpg'.format(time_steps)), img)
+    cv2.imwrite(os.path.join(save_path, '{0:05d}.jpg'.format(time_steps)), img)
 
 model = DQN.load(os.path.join(os.path.dirname(__file__), 'logs/best_model.zip'))
 

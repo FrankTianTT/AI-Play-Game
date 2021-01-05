@@ -148,7 +148,7 @@ if __name__ == "__main__":
 
         if done:
             obs = env.reset()
-            print("rewards: {}, of {} steps".format(rewards, time_steps))
+            print("rollout: {}, rewards: {}, steps: {}".format(rollout, rewards, time_steps))
             rewards = 0
             time_steps = 0
             rollout += 1

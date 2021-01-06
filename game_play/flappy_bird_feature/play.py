@@ -14,13 +14,13 @@ if __name__ == "__main__":
     rewards = 0
     time_steps = 0
     while True:
-        action = 0 # env.action_space.sample()
+        action = env.action_space.sample()
         # action, _ = model.predict(obs, deterministic=True)
         obs, reward, done, info = env.step(action)
         rewards += reward
         time_steps += 1
         env.render()
-
+        print(obs)
         if done:
             obs = env.reset()
             print("rewards: {}, of {} steps".format(rewards, time_steps))

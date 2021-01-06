@@ -1,6 +1,6 @@
 # by frank tian, 2021-1-16
 
-from stable_baselines3 import SAC
+from stable_baselines3 import DQN
 import gym_flappy_bird
 from stable_baselines3.common.callbacks import EvalCallback
 import gym
@@ -13,8 +13,11 @@ eval_callback = EvalCallback(eval_env=eval_env,
                              log_path="logs",
                              best_model_save_path="logs")
 
-model = SAC(policy="MlpPolicy",
+model = DQN(policy="MlpPolicy",
             env=env,
+            batch_size=32,
+            buffer_size=1000000,
+            learning_starts=50000,
             tensorboard_log="log")
 
 print(model.policy)

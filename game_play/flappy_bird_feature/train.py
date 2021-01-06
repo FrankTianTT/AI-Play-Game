@@ -9,7 +9,7 @@ env = gym.make("FlappyBirdFeature-v0")
 eval_env = gym.make("FlappyBirdFeature-v0")
 
 eval_callback = EvalCallback(eval_env=eval_env,
-                             eval_freq=int(3e3),
+                             eval_freq=5000,
                              log_path="logs",
                              best_model_save_path="logs")
 

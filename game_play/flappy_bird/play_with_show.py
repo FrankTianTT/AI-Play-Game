@@ -109,7 +109,7 @@ model.policy.q_net.q_net.register_forward_hook(
 
 save_path = 'show_save'
 
-env = gym.make("flappy-bird-v0", is_demo=True)
+env = gym.make("FlappyBird-v0", is_demo=True)
 obs = env.reset()
 
 if __name__ == "__main__":

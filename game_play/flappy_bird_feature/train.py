@@ -2,30 +2,22 @@
 
 from stable_baselines3 import DQN
 import gym_flappy_bird
-from utility import CnnEvalCallback
-from utility import CustomCNN
+from stable_baselines3.common.callbacks import EvalCallback
 import gym
 
+env = gym.make("FlappyBirdFeature-v0")
+eval_env = gym.make("FlappyBirdFeature-v0")
 
-env = gym.make("FlappyBird-v0")
-eval_env = gym.make("FlappyBird-v0")
-
-eval_callback = CnnEvalCallback(eval_env=eval_env,
+eval_callback = EvalCallback(eval_env=eval_env,
                              eval_freq=int(3e3),
                              log_path="logs",
                              best_model_save_path="logs")
 
-policy_kwargs = dict(
-    features_extractor_class=CustomCNN,
-    features_extractor_kwargs=dict(features_dim=128),
-)
-
-model = DQN(policy="CnnPolicy",
+model = DQN(policy="MlpPolicy",
             env=env,
             batch_size=32,
             buffer_size=5000,
             learning_starts=250,
-            policy_kwargs=policy_kwargs,
             tensorboard_log="log")
 
 print(model.policy)

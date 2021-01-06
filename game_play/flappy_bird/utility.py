@@ -86,7 +86,7 @@ class CustomCNN(BaseFeaturesExtractor):
 
 
 if __name__ == "__main__":
-    # env = gym.make("flappy-bird-v0")
+    # env = gym.make("FlappyBird-v0")
     # policy_kwargs = dict(
     #     features_extractor_class=CustomCNN,
     #     features_extractor_kwargs=dict(features_dim=128),
@@ -114,7 +114,7 @@ if __name__ == "__main__":
             activation[name] = output.detach()
         return hook
 
-    env = gym.make("flappy-bird-v0")
+    env = gym.make("FlappyBird-v0")
 
     model = DQN.load(os.path.join(os.path.dirname(__file__), 'logs/best_model.zip'))
 

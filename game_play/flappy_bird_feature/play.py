@@ -1,4 +1,4 @@
-# by frank tian, 2021-1-14
+# by frank tian, 2021-1-16
 
 from stable_baselines3 import DQN
 import gym_flappy_bird
